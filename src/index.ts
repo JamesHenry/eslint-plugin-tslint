@@ -7,7 +7,7 @@
 // Requirements
 //------------------------------------------------------------------------------
 
-import { Linter as TSLintLinter } from 'tslint';
+import { Linter as TSLintLinter, RuleSeverity, Configuration } from 'tslint';
 
 //------------------------------------------------------------------------------
 // Plugin Definition
@@ -18,18 +18,37 @@ interface LineAndColumn {
   column: number;
 }
 
+type RawRuleConfig =
+  | null
+  | undefined
+  | boolean
+  | any[]
+  | {
+      severity?: RuleSeverity | 'warn' | 'none' | 'default';
+      options?: any;
+    };
+
+interface RawRulesConfig {
+  [key: string]: RawRuleConfig;
+}
+
+interface TSLintPluginOptions {
+  rulesDirectory?: string[];
+  rules?: RawRulesConfig;
+}
+
 interface ESLintContext {
   getSourceCode(): { text: string };
   report(config: {
     message: string;
     loc: { start: LineAndColumn; end: LineAndColumn };
   }): void;
-  options: { rules: {}; rulesDirectory: string[] }[];
+  options: TSLintPluginOptions[];
 }
 
 export const rules = {
   /**
-   * Expose a single rule called "config", which will be accessed in users' eslint config files
+   * Expose a single rule called "config", which will be accessed in the user's eslint config files
    * via "tslint/config"
    */
   config: {
@@ -81,6 +100,15 @@ export const rules = {
       };
 
       /**
+       * Manually construct a configFile for TSLint
+       */
+      const rawConfig: TSLintPluginOptions = {};
+      rawConfig.rules = tslintRules || {};
+      rawConfig.rulesDirectory = tslintRulesDirectory || [];
+
+      const tslintConfig = Configuration.parseConfigFile(rawConfig);
+
+      /**
        * Create an instance of TSLint
        */
       const tslint = new TSLintLinter(tslintOptions);
@@ -89,9 +117,7 @@ export const rules = {
        * Lint the source code using the configured TSLint instance, and the rules which have been
        * passed via the ESLint rule options for this rule (using "tslint/config")
        */
-      tslint.lint(fakeFilename, sourceCode, {
-        rules: tslintRules,
-      });
+      tslint.lint(fakeFilename, sourceCode, tslintConfig);
 
       const result = tslint.getResult();
 
