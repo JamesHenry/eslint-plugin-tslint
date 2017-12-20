@@ -20,7 +20,7 @@
     "tslint": "^5.0.0"
   },
   "devDependencies": {
-    "@types/jest": "21.1.8",
+    "@types/jest": "21.1.9",
     "@types/node": "8.0.58",
     "cz-conventional-changelog": "2.1.0",
     "eslint": "4.13.1",
