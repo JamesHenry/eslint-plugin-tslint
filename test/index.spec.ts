@@ -1,3 +1,5 @@
+import { resolve } from 'path';
+import { readFileSync } from 'fs';
 /**
  * @fileoverview TSLint wrapper plugin for ESLint
  * @author James Henry
@@ -78,6 +80,29 @@ ruleTester.run('tslint/config', rule, {
           message: 'failure (tslint:always-fail)',
           line: 1,
           column: 1,
+        },
+      ],
+    },
+    {
+      filename: resolve('test/test-project/source.ts'),
+      code: readFileSync('test/test-project/source.ts').toString(),
+      parser: 'typescript-eslint-parser',
+      parserOptions,
+      options: [
+        {
+          rulesDirectory: ['node_modules/tslint/lib/rules'],
+          rules: { 'restrict-plus-operands': true, 'no-unused-variable': true },
+          configFile: `${__dirname}/test-project/tsconfig.json`,
+        },
+      ],
+      errors: [
+        {
+          message:
+            'Operands of \'+\' operation must either be both strings or both numbers, consider using template literals (tslint:restrict-plus-operands)',
+        },
+        {
+          message:
+            '\'unused\' is declared but its value is never read. (tslint:no-unused-variable)',
         },
       ],
     },
