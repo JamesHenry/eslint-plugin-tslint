@@ -34,14 +34,6 @@ export function createService({
     version: number;
     snapshot: ts.IScriptSnapshot | undefined;
   }> = {};
-  // Adding libs
-  (compilationSettings.lib || []).forEach(lib => {
-    const fileName = require.resolve(`typescript/lib/lib.${lib}.d.ts`);
-    files[fileName] = {
-      version: 0,
-      snapshot: ts.ScriptSnapshot.fromString(readFileSync(fileName, 'utf8')),
-    };
-  });
 
   // Caches
   const fileExistsCache = Object.create(null);
@@ -59,9 +51,10 @@ export function createService({
       let fileRef = files[fileName];
       if (!fileRef) {
         files[fileName] = fileRef = { version: 0, snapshot: undefined };
-        // Handle special case, not sure why it's happen
         if (fileName === 'lib.d.ts') {
-          fileName = require.resolve('typescript/lib/lib.d.ts');
+          fileName = require
+            .resolve('typescript/lib/lib.d.ts')
+            .replace(/\\/g, '/');
         }
       }
       if (fileRef.snapshot === undefined) {
@@ -97,6 +90,17 @@ export function createService({
     },
   };
 
+  // Adding libs
+  (compilationSettings.lib || []).forEach(lib => {
+    const fileName = require
+      .resolve(`typescript/lib/lib.${lib}.d.ts`)
+      .replace(/\\/g, '/');
+    files[fileName] = {
+      version: 0,
+      snapshot: servicesHost.getScriptSnapshot(fileName),
+    };
+  });
+
   // Create the language service files
   const service = ts.createLanguageService(
     servicesHost,
@@ -111,6 +115,7 @@ export function createService({
       fileName: string;
       fileContent: string;
     }) {
+      fileName = fileName.replace(/\\/g, '/');
       let fileRef = files[fileName];
       if (!fileRef) {
         files[fileName] = fileRef = { version: 0, snapshot: undefined };
@@ -120,6 +125,14 @@ export function createService({
 
       fileExistsCache[fileName] = true;
       readFileCache[fileName] = fileContent;
+    },
+    getDiagnostics(fileName: string) {
+      const program = service.getProgram();
+      const sourceFile = program.getSourceFile(fileName);
+      return [
+        ...program.getSyntacticDiagnostics(sourceFile),
+        ...program.getSemanticDiagnostics(sourceFile),
+      ];
     },
     getProgram: () => service.getProgram(),
   };
