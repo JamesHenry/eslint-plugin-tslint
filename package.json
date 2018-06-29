@@ -4,15 +4,21 @@
   "main": "lib/index.js",
   "author": "James Henry <james@henry.sc>",
   "description": "TSLint wrapper plugin for ESLint",
-  "keywords": ["eslint", "eslintplugin", "eslint-plugin", "tslint"],
-  "files": ["lib"],
+  "keywords": [
+    "eslint",
+    "eslintplugin",
+    "eslint-plugin",
+    "tslint"
+  ],
+  "files": [
+    "lib"
+  ],
   "repository": "JamesHenry/eslint-plugin-tslint",
   "license": "MIT",
   "scripts": {
     "test": "npm run build && jest",
     "build": "rm -rf lib/ && tsc",
-    "semantic-release":
-      "semantic-release pre && npm publish && semantic-release post",
+    "semantic-release": "semantic-release pre && npm publish && semantic-release post",
     "precommit": "npm test && lint-staged",
     "cz": "git-cz"
   },
@@ -20,6 +26,7 @@
     "tslint": "^5.0.0"
   },
   "devDependencies": {
+    "@types/eslint": "^4.16.2",
     "@types/jest": "21.1.8",
     "@types/node": "8.0.58",
     "cz-conventional-changelog": "2.1.0",
@@ -35,8 +42,14 @@
     "typescript-eslint-parser": "10.0.0"
   },
   "lint-staged": {
-    "src/**/*": ["prettier-eslint --write", "git add"],
-    "test/**/*": ["prettier-eslint --write", "git add"]
+    "src/**/*": [
+      "prettier-eslint --write",
+      "git add"
+    ],
+    "test/**/*": [
+      "prettier-eslint --write",
+      "git add"
+    ]
   },
   "config": {
     "commitizen": {
@@ -44,10 +57,17 @@
     }
   },
   "jest": {
+    "testEnvironment": "node",
     "transform": {
       "^.+\\.tsx?$": "ts-jest"
     },
-    "testRegex": "(/test/.*|(\\.|/)(test|spec))\\.ts$",
-    "moduleFileExtensions": ["ts", "js", "json"]
+    "testMatch": [
+      "<rootDir>/test/*.spec.ts"
+    ],
+    "moduleFileExtensions": [
+      "ts",
+      "js",
+      "json"
+    ]
   }
 }
