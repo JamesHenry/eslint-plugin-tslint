@@ -1,53 +1,120 @@
 {
-  "name": "eslint-plugin-tslint",
-  "version": "0.0.0-semantically-released",
-  "main": "lib/index.js",
+  "name": "eslint-plugin-tslint2",
+  "version": "2.2.4",
+  "main": "dist/index.js",
+  "typings": "src/index.ts",
   "author": "James Henry <james@henry.sc>",
+  "contributors": [
+    "Roman Vasilev (https://github.com/unlight)"
+  ],
   "description": "TSLint wrapper plugin for ESLint",
-  "keywords": ["eslint", "eslintplugin", "eslint-plugin", "tslint"],
-  "files": ["lib"],
-  "repository": "JamesHenry/eslint-plugin-tslint",
+  "keywords": [
+    "eslint",
+    "eslintplugin",
+    "eslint-plugin",
+    "tslint"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/unlight/eslint-plugin-tslint2.git"
+  },
   "license": "MIT",
   "scripts": {
-    "test": "npm run build && jest",
-    "build": "rm -rf lib/ && tsc",
-    "semantic-release":
-      "semantic-release pre && npm publish && semantic-release post",
-    "precommit": "npm test && lint-staged",
+    "test": "npm run tscheck && npm run test:cov",
+    "tscheck": "echo tscheck... && tsc --noEmit",
+    "test:r": "mocha -r ts-node/register/transpile-only --timeout 8s test/*.spec.ts",
+    "test:w": "mocha -r ts-node/register/transpile-only --watch-extensions ts --watch --timeout 8s test/**/*.spec.ts",
+    "test:cov": "nyc mocha --timeout 8s test/**/*.spec.ts",
+    "test:d": "node --inspect-brk -r ts-node/register/transpile-only node_modules/mocha/bin/_mocha --no-timeouts --watch-extensions ts --watch test/**/*.spec.ts",
+    "semantic-release": "semantic-release",
+    "prepublishOnly": "npm run build && sed -i -e 's/devDependencies/_devDependencies/g' package.json",
+    "build": "tsc",
+    "prebuild": "npm run clean",
+    "clean": "rm -rf dist/",
     "cz": "git-cz"
+  },
+  "dependencies": {
+    "typescript-service": "^2.0.3"
   },
   "peerDependencies": {
     "tslint": "^5.0.0"
   },
   "devDependencies": {
-    "@types/jest": "21.1.8",
-    "@types/node": "8.0.58",
-    "cz-conventional-changelog": "2.1.0",
-    "eslint": "4.13.1",
-    "husky": "^0.14.3",
-    "jest": "21.2.1",
-    "lint-staged": "6.0.0",
-    "prettier-eslint-cli": "4.4.2",
-    "semantic-release": "8.2.0",
-    "ts-jest": "^21.2.3",
-    "tslint": "^5.8.0",
-    "typescript": "2.6.2",
-    "typescript-eslint-parser": "10.0.0"
+    "@semantic-release/changelog": "^3.0.0",
+    "@semantic-release/git": "^7.0.3",
+    "@types/eslint": "^4.16.3",
+    "@types/mocha": "^5.2.5",
+    "@types/node": "^10.9.3",
+    "cz-conventional-changelog": "^2.1.0",
+    "eslint": "^5.4.0",
+    "mocha": "^5.2.0",
+    "nyc": "^13.0.1",
+    "semantic-release": "^15.9.12",
+    "ts-node": "^7.0.1",
+    "tslint": "^5.11.0",
+    "typescript": "^3.0.1",
+    "typescript-eslint-parser": "^18.0.0"
   },
-  "lint-staged": {
-    "src/**/*": ["prettier-eslint --write", "git add"],
-    "test/**/*": ["prettier-eslint --write", "git add"]
+  "nyc": {
+    "include": [
+      "src/**/*.ts",
+      "src/**/*.tsx"
+    ],
+    "exclude": [
+      "**/*.d.ts",
+      "**/*.spec.ts"
+    ],
+    "extension": [
+      ".ts",
+      ".tsx"
+    ],
+    "require": [
+      "ts-node/register/transpile-only"
+    ],
+    "reporter": [
+      "text"
+    ],
+    "sourceMap": true,
+    "instrument": true
+  },
+  "release": {
+    "generateNotes": {
+      "writerOpts": {
+        "__keep": "me"
+      }
+    },
+    "verifyConditions": [
+      "@semantic-release/changelog",
+      "@semantic-release/github",
+      "@semantic-release/npm",
+      "@semantic-release/git"
+    ],
+    "prepare": [
+      "@semantic-release/changelog",
+      "@semantic-release/npm",
+      "@semantic-release/git"
+    ],
+    "publish": [
+      "@semantic-release/npm",
+      "@semantic-release/github"
+    ],
+    "success": [
+      "@semantic-release/github"
+    ],
+    "fail": [
+      "@semantic-release/github"
+    ]
   },
   "config": {
     "commitizen": {
-      "path": "./node_modules/cz-conventional-changelog"
+      "path": "cz-conventional-changelog"
     }
   },
-  "jest": {
-    "transform": {
-      "^.+\\.tsx?$": "ts-jest"
-    },
-    "testRegex": "(/test/.*|(\\.|/)(test|spec))\\.ts$",
-    "moduleFileExtensions": ["ts", "js", "json"]
+  "bugs": {
+    "url": "https://github.com/unlight/eslint-plugin-tslint2/issues"
+  },
+  "homepage": "https://github.com/unlight/eslint-plugin-tslint2#readme",
+  "directories": {
+    "test": "test"
   }
 }
