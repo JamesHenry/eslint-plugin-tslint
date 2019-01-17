@@ -1,3 +1,8 @@
+# This project has been moved to the TypeScript ESLint organization -> https://typescript-eslint.io
+
+
+---
+
 # ESLint Plugin TSLint
 [![Travis](https://img.shields.io/travis/JamesHenry/eslint-plugin-tslint.svg?style=flat-square)](https://travis-ci.org/JamesHenry/eslint-plugin-tslint) 
 [![GitHub license](https://img.shields.io/npm/l/eslint-plugin-tslint.svg?style=flat-square)](https://github.com/JamesHenry/eslint-plugin-tslint/blob/master/LICENSE) 
